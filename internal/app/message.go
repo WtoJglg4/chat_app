@@ -1,4 +1,4 @@
-package chat
+package app
 
 type Message struct {
 	Author string `json:"author"`

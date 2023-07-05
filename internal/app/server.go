@@ -18,6 +18,26 @@ type Server struct {
 	errCh     chan error
 }
 
+func NewServer(pattern string) *Server {
+	messages := []*Message{}
+	clients := make(map[int]*Client)
+	addCh := make(chan *Client)
+	delCh := make(chan *Client)
+	sendAllCh := make(chan *Message)
+	doneCh := make(chan bool)
+	errCh := make(chan error)
+	return &Server{
+		pattern,
+		messages,
+		clients,
+		addCh,
+		delCh,
+		sendAllCh,
+		doneCh,
+		errCh,
+	}
+}
+
 func (s *Server) Add(c *Client) {
 	s.addCh <- c
 }
@@ -52,7 +72,7 @@ func (s *Server) sendAll(msg *Message) {
 
 func (s *Server) Listen() {
 
-	log.Println("Listenong server...")
+	log.Println("Listening server...")
 
 	//websocket handler
 	onConnected := func(ws *websocket.Conn) {
@@ -63,6 +83,7 @@ func (s *Server) Listen() {
 			}
 		}()
 
+		log.Println("Origin: ", ws.Config().Origin)
 		client := NewClient(ws, s)
 		s.Add(client)
 		client.Listen()
@@ -70,6 +91,7 @@ func (s *Server) Listen() {
 
 	http.Handle(s.pattern, websocket.Handler(onConnected))
 	log.Println("Created handler")
+	log.Println(s.clients)
 
 	for {
 		select {

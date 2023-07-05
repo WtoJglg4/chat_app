@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>Sample of websocket with golang</title>
+</head>
+
+<body>
+	<script>
+		var socket = new WebSocket("ws://" + location.host + "/entry");
+		socket.onopen = function() {
+			console.log("Соединение установлено.");
+
+			// Функция для отправки данных в формате JSON
+			function sendMessage() {
+				var authorInput = document.getElementById("inputAuthor");
+				var messageInput = document.getElementById("inputBody");
+
+				// Создание объекта с данными
+				var data = {
+					"author": authorInput.value,
+					"body": messageInput.value
+				};
+
+				// Конвертация данных в JSON
+				var jsonData = JSON.stringify(data);
+
+				// Отправка данных по вебсокету
+
+				console.log(jsonData)
+				socket.send(jsonData);
+			}
+
+			// Обработчик клика на кнопку Send
+			document.getElementById("sendButton").addEventListener("click", function(event) {
+				event.preventDefault();
+				sendMessage();
+			});
+		};
+
+		socket.onclose = function(event) {
+			if (event.wasClean) {
+				console.log('Соединение закрыто чисто');
+			} else {
+				console.log('Обрыв соединения'); // например, "убит" процесс сервера
+			}
+			console.log('Код: ' + event.code + ' причина: ' + event.reason);
+		};
+
+		socket.onmessage = function(event) {
+			console.log("Получены данные " + event.data);
+		};
+
+		socket.onerror = function(error) {
+			console.log("Ошибка " + error.message);
+		};
+	</script>
+
+	<div class="grid-row">
+		<div class="span3"></div>
+		<div class="span6">
+			<h1>Input</h1>
+			<form class="well form-horizontal">
+
+				<!-- Author -->
+				<div class="control-group">
+					<label class="control-label" for="inputAuthor">Author:</label>
+					<div class="controls">
+						<input id="inputAuthor" type="text">
+					</div>
+				</div>
+
+				<!-- Body -->
+				<div class="control-group">
+					<label class="control-label" for="inputBody">Message:</label>
+					<div class="controls">
+						<textarea id="inputBody"></textarea>
+					</div>
+				</div>
+
+				<div class="control-group">
+					<div class="controls">
+						<a href="#" class="btn pull-right" id="sendButton">Send</a>
+					</div>
+				</div>
+			</form>
+
+			<h1>Messages</h1>
+			<div><!-- Messages --></div>
+
+		</div>
+		<div class="span3"></div>
+	</div>
+
+	<script>
+		// Функция для отображения сообщений
+		function displayMessage(author, message) {
+			console.log(author, message)
+			var messagesContainer = document.querySelector("div");
+			var messageElement = document.createElement("div");
+
+			var headingElement = document.createElement("h3");
+			headingElement.textContent = author + " says:";
+			messageElement.appendChild(headingElement);
+
+			var preElement = document.createElement("pre");
+			preElement.textContent = message;
+			messageElement.appendChild(preElement);
+			
+
+			messagesContainer.appendChild(messageElement);
+			
+		}
+
+		// Обработчик сообщений от сервера
+		socket.onmessage = function(event) {
+			var data = JSON.parse(event.data);
+			displayMessage(data.author, data.message);
+			console.log(data.author, data.message)
+		};
+	</script>
+
+</body>
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Sample of websocket with golang</title>
+	</head>
+
+	<body>
+		<script>
+			var socket = new WebSocket("ws://" + location.host + "/entry")
+			socket.onopen = function() {
+				console.log("Соединение установлено.");
+				socket.send(encoder.encode("Hello world!"));
+				};
+
+				socket.onclose = function(event) {
+				if (event.wasClean) {
+					console.log('Соединение закрыто чисто');
+				} else {
+					console.log('Обрыв соединения'); // например, "убит" процесс сервера
+				}
+				console.log('Код: ' + event.code + ' причина: ' + event.reason);
+				};
+
+				socket.onmessage = function(event) {
+					console.log("Получены данные " + event.data);
+				};
+
+				socket.onerror = function(error) {
+					console.log("Ошибка " + error.message);
+				};
+		</script>
+
+
+	<div class="grid-row">
+
+		<div class="span3">
+		</div>
+
+		<div class="span6">
+
+			<h1>Input</h1>
+			<form class="well form-horizontal" data-bind="with: editingMessage">
+
+				Author
+				<div class="control-group">
+					<label class="control-label" for="inputAuthor">Author :</label>
+					<div class="controls">
+						<input id="inputAuthor" type="text" data-bind="value: author"/>
+					</div>
+				</div>
+
+				<!-- Body -->
+				<!-- <div class="control-group">
+					<label class="control-label" for="inputBody">Message :</label>
+					<div class="controls">
+						<textarea id="inputBody" data-bind="value: body">
+						</textarea>
+					</div>
+				</div>
+
+				<div class="control-group">
+					<div class="controls">
+						<a href="#" class="btn pull-right" data-bind="click: $parent.send.bind($parent)">Send</a>
+					</div>
+				</div>
+			</form>
+
+			<h1>Messages</h1>
+			<div data-bind="foreach: messages">
+				<div>
+					<h3> -->
+						<!-- ko text: author --><!-- /ko -->
+						<!-- says :
+					</h3>
+					<pre data-bind="text:body">
+					</pre>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="span3">
+		</div>
+
+	</body>
+</html> -->
