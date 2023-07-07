@@ -3,7 +3,6 @@ package app
 import (
 	"fmt"
 	"io"
-	"log"
 
 	"golang.org/x/net/websocket"
 )
@@ -67,7 +66,7 @@ func (c *Client) listenWrite() {
 		select {
 		//send message to client
 		case msg := <-c.ch:
-			log.Println("Send", msg)
+			//log.Println("Send", msg)
 			websocket.JSON.Send(c.ws, msg)
 		case <-c.doneCh:
 			c.server.Del(c)

@@ -83,7 +83,7 @@ func (s *Server) Listen() {
 			}
 		}()
 
-		log.Println("Origin: ", ws.Config().Origin)
+		//log.Println("Origin: ", ws.Config().Origin)
 		client := NewClient(ws, s)
 		s.Add(client)
 		client.Listen()
@@ -91,7 +91,7 @@ func (s *Server) Listen() {
 
 	http.Handle(s.pattern, websocket.Handler(onConnected))
 	log.Println("Created handler")
-	log.Println(s.clients)
+	//log.Println(s.clients)
 
 	for {
 		select {
